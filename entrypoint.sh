@@ -46,6 +46,28 @@ HOP_PORT_BLOCK=""
 
 cat > /etc/sing-box/config.json <<JSONEOF
 {
+  "dns": {
+    "servers": [
+      {
+        "tag": "dns-remote",
+        "address": "tls://8.8.8.8",
+        "detour": "hy2-proxy"
+      },
+      {
+        "tag": "dns-local",
+        "address": "223.5.5.5",
+        "detour": "direct"
+      }
+    ],
+    "rules": [
+      {
+        "rule_set": ["cn"],
+        "server": "dns-local"
+      }
+    ],
+    "final": "dns-remote",
+    "independent_cache": true
+  },
   "inbounds": [
     {
       "type": "socks",
@@ -72,10 +94,18 @@ cat > /etc/sing-box/config.json <<JSONEOF
     {
       "type": "direct",
       "tag": "direct"
+    },
+    {
+      "type": "dns",
+      "tag": "dns-out"
     }
   ],
   "route": {
     "rules": [
+      {
+        "protocol": "dns",
+        "outbound": "dns-out"
+      },
       {
         "rule_set": ["cn", "cnip"],
         "outbound": "direct"
