@@ -27,11 +27,12 @@ if [ -n "$HY2_URI" ]; then
   case "$HY2_INSECURE_RAW" in 1|true) HY2_SKIP=true ;; *) HY2_SKIP=false ;; esac
   [ -n "$HY2_PIN" ] && HY2_SKIP=true
   HY2_NAME="${FRAGMENT:-hy2-proxy}"
-  HY2_PORTS=""; HY2_HOP="";
+  HY2_PORTS=""; HY2_HOP=""; HY2_CERT=""
   if [ -n "$HY2_MPORT" ]; then
     HY2_PORTS="    ports: \"${HY2_MPORT}\""
     HY2_HOP="    hop-interval: 30"
   fi
+  [ -n "$HY2_PIN" ] && HY2_CERT="    certificate: \"${HY2_PIN}\""
 
   PROXY_NAMES="${PROXY_NAMES}      - ${HY2_NAME}
 "
@@ -42,6 +43,7 @@ if [ -n "$HY2_URI" ]; then
     password: \"${HY2_PASSWORD}\"
     sni: \"${HY2_SNI}\"
     skip-cert-verify: ${HY2_SKIP}
+${HY2_CERT}
 ${HY2_PORTS}
 ${HY2_HOP}
 "
