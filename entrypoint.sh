@@ -41,8 +41,6 @@ esac
 TLS_BLOCK="{\"enabled\":true,\"server_name\":\"${SNI}\",\"insecure\":${INSECURE}}"
 
 # --- build config.json ---
-HOP_PORT_BLOCK=""
-[ -n "$MPORT" ] && HOP_PORT_BLOCK=",\"hop_ports\":\"${MPORT}\""
 
 cat > /etc/sing-box/config.json <<JSONEOF
 {
@@ -91,7 +89,7 @@ cat > /etc/sing-box/config.json <<JSONEOF
       "server": "${SERVER}",
       "server_port": ${SERVER_PORT},
       "password": "${PASSWORD}",
-      "tls": ${TLS_BLOCK}${HOP_PORT_BLOCK}
+      "tls": ${TLS_BLOCK}
     },
     {
       "type": "direct",
