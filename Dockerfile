@@ -4,7 +4,7 @@ ARG MIHOMO_REPO=https://github.com/MetaCubeX/mihomo/releases/latest/download
 
 RUN apk add --no-cache ca-certificates curl yq && \
     MIHOMO_VERSION=$(curl -s https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | yq '.tag_name') && \
-    curl -fSL "https://github.com/MetaCubeX/mihomo/releases/download/${MIHOMO_VERSION}/mihomo-linux-amd64-${MIHOMO_VERSION}.gz" \
+    curl -fSL "https://github.com/MetaCubeX/mihomo/releases/download/${MIHOMO_VERSION}/mihomo-linux-amd64-compatible-${MIHOMO_VERSION}.gz" \
       -o /tmp/mihomo.gz && \
     gunzip /tmp/mihomo.gz && \
     mv /tmp/mihomo /usr/local/bin/mihomo && \
