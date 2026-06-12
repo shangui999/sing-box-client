@@ -43,7 +43,8 @@ TLS_BLOCK="{\"enabled\":true,\"server_name\":\"${SNI}\",\"insecure\":${INSECURE}
 # --- build config.json ---
 HOP_BLOCK=""
 if [ -n "$MPORT" ]; then
-  HOP_BLOCK=",\"server_ports\":[\"${MPORT}\"],\"hop_interval\":\"30s\""
+  HOP_PORTS="$(echo "$MPORT" | tr '-' ':')"
+  HOP_BLOCK=",\"server_ports\":[\"${HOP_PORTS}\"],\"hop_interval\":\"30s\""
 fi
 
 cat > /etc/sing-box/config.json <<JSONEOF
