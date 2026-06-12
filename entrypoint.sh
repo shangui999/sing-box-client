@@ -102,6 +102,9 @@ cat > /etc/sing-box/config.json <<JSONEOF
     }
   ],
   "route": {
+    "default_domain_resolver": {
+      "server": "dns-local"
+    },
     "rules": [
       {
         "protocol": "dns",
