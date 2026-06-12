@@ -3,7 +3,7 @@ FROM alpine:latest
 ARG SINGBOX_VERSION=1.13.13
 ARG RULE_SET_REPO=https://github.com/DustinWin/ruleset_geodata/releases/latest/download
 
-RUN apk add --no-cache ca-certificates curl && \
+RUN apk add --no-cache ca-certificates curl gcompat && \
     curl -fSL "https://github.com/SagerNet/sing-box/releases/download/v${SINGBOX_VERSION}/sing-box-${SINGBOX_VERSION}-linux-amd64.tar.gz" \
       -o /tmp/sing-box.tar.gz && \
     tar -xzf /tmp/sing-box.tar.gz -C /tmp && \
