@@ -43,7 +43,7 @@ API_SECRET="${MIHOMO_SECRET:-$(cat /proc/sys/kernel/random/uuid)}"
 PORTS_LINE=""
 HOP_INTERVAL_LINE=""
 if [ -n "$MPORT" ]; then
-  PORTS_LINE="    ports: [\"${MPORT}\"]"
+  PORTS_LINE="    ports: \"${MPORT}\""
   HOP_INTERVAL_LINE="    hop-interval: 30"
 fi
 
