@@ -11,10 +11,10 @@ RUN apk add --no-cache ca-certificates curl yq && \
     chmod +x /usr/local/bin/mihomo && \
     mkdir -p /etc/mihomo/rules && \
     # Download GeoIP and GeoSite databases
-    curl -fSL "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.metadb" \
-      -o /etc/mihomo/geoip.metadb && \
+    curl -fSL "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.dat" \
+      -o /etc/mihomo/GeoIP.dat && \
     curl -fSL "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat" \
-      -o /etc/mihomo/geosite.dat && \
+      -o /etc/mihomo/GeoSite.dat && \
     rm -rf /tmp/*
 
 COPY entrypoint.sh /entrypoint.sh
