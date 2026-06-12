@@ -59,7 +59,8 @@ secret: "${API_SECRET}"
 
 geodata-mode: true
 geodata-loader: standard
-geo-auto-update: false
+geo-auto-update: true
+geo-update-interval: 24
 
 geox-url:
   geoip: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.metadb"
