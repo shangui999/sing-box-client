@@ -19,13 +19,14 @@
 ```yaml
 services:
   mihomo:
-    image: ghcr.io/shangui999/mihomo-client:dev
+    image: ghcr.io/shangui999/mihomo-client:latest
     container_name: mihomo-client
     restart: always
     environment:
-      - HY2_URI=hysteria2://YOUR_PASSWORD@YOUR_SERVER:PORT?sni=example.com&insecure=1#my-hy2
-      - VLESS_URI=vless://UUID@SERVER:PORT?type=tcp&security=reality&sni=example.com&fp=chrome&pbk=KEY&sid=ID&flow=xtls-rprx-vision#my-vless
-      - SS_URI=ss://BASE64@SERVER:PORT#my-ss
+      - HY2_URI=hysteria2://YOUR_PASSWORD@SERVER1:PORT?sni=example.com&insecure=1#hy2-node1
+      - HY2_URI_1=hysteria2://YOUR_PASSWORD@SERVER2:PORT?sni=example.com&insecure=1#hy2-node2
+      - VLESS_URI=vless://UUID@SERVER:PORT?type=tcp&security=reality&sni=example.com&fp=chrome&pbk=KEY&sid=ID&flow=xtls-rprx-vision#vless-node1
+      - SS_URI=ss://BASE64@SERVER:PORT#ss-node1
     ports:
       - "10808:10808"   # 混合端口 (HTTP + SOCKS5)
       - "9090:9090"     # 管理面板 API
@@ -44,13 +45,16 @@ docker run -d --name mihomo-client --restart always \
 
 | 变量 | 必填 | 默认值 | 说明 |
 |------|------|--------|------|
-| `HY2_URI` | 三选一 | - | Hysteria 2 URI |
-| `VLESS_URI` | 三选一 | - | VLESS URI |
-| `SS_URI` | 三选一 | - | Shadowsocks URI |
+| `HY2_URI` | 至少一个 | - | Hysteria 2 URI |
+| `HY2_URI_1` / `HY2_URI_2` / ... | 可选 | - | 更多 HY2 节点 |
+| `VLESS_URI` | 至少一个 | - | VLESS URI |
+| `VLESS_URI_1` / `VLESS_URI_2` / ... | 可选 | - | 更多 VLESS 节点 |
+| `SS_URI` | 至少一个 | - | Shadowsocks URI |
+| `SS_URI_1` / `SS_URI_2` / ... | 可选 | - | 更多 SS 节点 |
 | `MIXED_PORT` | 否 | `10808` | 混合端口，同时支持 HTTP 和 SOCKS5 |
 | `MIHOMO_SECRET` | 否 | 随机 UUID | 管理面板 API 认证密钥 |
 
-> 至少设置一个 URI 变量。可同时设置多个，在管理面板中切换。
+> 至少设置一个 URI 变量。同协议可设置多个（如 `VLESS_URI_1`、`VLESS_URI_2`），在管理面板中切换。
 
 ## 支持的协议和参数
 
@@ -167,8 +171,8 @@ curl -x socks5h://YOUR_HOST_IP:10808 https://www.google.com
 
 | 标签 | 分支 | 说明 |
 |------|------|------|
-| `latest` | main | 稳定版，仅支持 HY2 |
-| `dev` | dev | 开发版，支持 HY2 + VLESS + SS 多协议 |
+| `latest` | main | 稳定版，支持 HY2 + VLESS + SS 多协议 + 多节点 |
+| `dev` | dev | 开发版，与 main 同步 |
 
 ## CI/CD
 
