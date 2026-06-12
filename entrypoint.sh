@@ -3,6 +3,9 @@ set -e
 
 SOCKS_PORT="${HY2_SOCKS_PORT:-10808}"
 HTTP_PORT="${HY2_HTTP_PORT:-10809}"
+RULE_SET_DIR="/etc/sing-box/rule-set"
+UPDATE_INTERVAL="${RULE_UPDATE_INTERVAL:-7d}"
+RULE_SET_REPO="${RULE_SET_REPO:-https://github.com/DustinWin/ruleset_geodata/releases/latest/download}"
 
 [ -z "$HY2_URI" ] && { echo "HY2_URI is required"; exit 1; }
 
@@ -34,10 +37,13 @@ case "$INSECURE_RAW" in
 esac
 [ -n "$PIN_SHA256" ] && INSECURE=true
 
-# --- build config.json ---
+# --- TLS block ---
 TLS_BLOCK="{\"enabled\":true,\"server_name\":\"${SNI}\",\"insecure\":${INSECURE}}"
 
-# Use jq if available, otherwise manual JSON
+# --- build config.json ---
+HOP_PORT_BLOCK=""
+[ -n "$MPORT" ] && HOP_PORT_BLOCK=",\"hop_ports\":\"${MPORT}\""
+
 cat > /etc/sing-box/config.json <<JSONEOF
 {
   "inbounds": [
@@ -60,7 +66,8 @@ cat > /etc/sing-box/config.json <<JSONEOF
       "tag": "hy2-proxy",
       "server": "${SERVER}",
       "server_port": ${SERVER_PORT},
-      "password": "${PASSWORD}"${HY2_OUT}
+      "password": "${PASSWORD}",
+      "tls": ${TLS_BLOCK}${HOP_PORT_BLOCK}
     },
     {
       "type": "direct",
@@ -84,25 +91,25 @@ cat > /etc/sing-box/config.json <<JSONEOF
         "tag": "cn",
         "type": "local",
         "format": "binary",
-        "path": "/etc/sing-box/rule-set/cn.srs"
+        "path": "${RULE_SET_DIR}/cn.srs"
       },
       {
         "tag": "cnip",
         "type": "local",
         "format": "binary",
-        "path": "/etc/sing-box/rule-set/cnip.srs"
+        "path": "${RULE_SET_DIR}/cnip.srs"
       },
       {
         "tag": "private",
         "type": "local",
         "format": "binary",
-        "path": "/etc/sing-box/rule-set/private.srs"
+        "path": "${RULE_SET_DIR}/private.srs"
       },
       {
         "tag": "privateip",
         "type": "local",
         "format": "binary",
-        "path": "/etc/sing-box/rule-set/privateip.srs"
+        "path": "${RULE_SET_DIR}/privateip.srs"
       }
     ]
   }
@@ -113,4 +120,30 @@ echo "--- sing-box config ---"
 cat /etc/sing-box/config.json
 echo "-----------------------"
 
+# --- rule-set updater ---
+update_rules() {
+  echo "$(date '+%F %T') Updating rule-sets via proxy..."
+  PROXY="http://127.0.0.1:${HTTP_PORT}"
+  for file in cn.srs cnip.srs private.srs privateip.srs gfw.srs; do
+    curl -sf -x "$PROXY" "${RULE_SET_REPO}/${file}" -o "${RULE_SET_DIR}/${file}.tmp" && \
+      mv "${RULE_SET_DIR}/${file}.tmp" "${RULE_SET_DIR}/${file}" && \
+      echo "  Updated ${file}" || \
+      echo "  Failed to update ${file}, keeping old"
+  done
+  # Reload sing-box config
+  kill -HUP $(cat /run/sing-box.pid 2>/dev/null) 2>/dev/null && \
+    echo "$(date '+%F %T') Rule-sets reloaded" || \
+    echo "$(date '+%F %T') Reload failed"
+}
+
+# Start updater in background (wait for proxy to be ready first)
+(
+  sleep 10  # wait for sing-box to establish
+  while true; do
+    update_rules
+    sleep "${UPDATE_INTERVAL}"
+  done
+) &
+
+# Start sing-box
 exec sing-box run -c /etc/sing-box/config.json
