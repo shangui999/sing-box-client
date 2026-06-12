@@ -35,10 +35,9 @@ if [ -n "$HY2_URI" ]; then
     val="$(urldecode "$val")"
     case "$key" in
       sni)           echo "    sni: \"${val}\"" ;;
-      insecure)
+      insecure|allowInsecure)
         case "$val" in 1|true) echo "    skip-cert-verify: true" ;; *) echo "    skip-cert-verify: false" ;; esac ;;
-      pinSHA256)     echo "    certificate: \"${val}\"
-    skip-cert-verify: true" ;;
+      pinSHA256)     echo "    certificate: \"${val}\"" ;;
       mport)         echo "    ports: \"${val}\"" ;;
       hop-interval)  echo "    hop-interval: ${val}" ;;
       up)            echo "    up: \"${val}\"" ;;
@@ -49,7 +48,7 @@ if [ -n "$HY2_URI" ]; then
       alpn)          echo "    alpn: [${val}]" ;;
       fingerprint)   echo "    fingerprint: ${val}" ;;
     esac
-  done > /tmp/hy2_opts
+  done | awk '!seen[$0]++' > /tmp/hy2_opts
 
   HY2_BLOCK="${HY2_BLOCK}
 $(cat /tmp/hy2_opts)"
