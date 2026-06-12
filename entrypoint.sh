@@ -50,7 +50,7 @@ cat > /etc/sing-box/config.json <<JSONEOF
     "servers": [
       {
         "tag": "dns-remote",
-        "address": "tls://8.8.8.8",
+        "address": "8.8.8.8",
         "detour": "hy2-proxy"
       },
       {
