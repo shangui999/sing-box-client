@@ -37,6 +37,9 @@ esac
 
 PROXY_NAME="${FRAGMENT:-hy2-proxy}"
 
+# --- API secret ---
+API_SECRET="${MIHOMO_SECRET:-$(cat /proc/sys/kernel/random/uuid)}"
+
 # --- port hopping ---
 PORTS_LINE=""
 HOP_INTERVAL_LINE=""
@@ -53,6 +56,7 @@ mode: rule
 log-level: info
 
 external-controller: 0.0.0.0:9090
+secret: "${API_SECRET}"
 
 geodata-mode: true
 geodata-loader: standard
@@ -135,5 +139,6 @@ sed -i '/^$/d' /etc/mihomo/config.yaml
 echo "--- mihomo config ---"
 cat /etc/mihomo/config.yaml
 echo "---------------------"
+echo "API Secret: ${API_SECRET}"
 
 exec mihomo -d /etc/mihomo
