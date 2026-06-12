@@ -60,8 +60,7 @@ cat > /etc/sing-box/config.json <<JSONEOF
       {
         "tag": "dns-local",
         "type": "udp",
-        "server": "223.5.5.5",
-        "detour": "direct"
+        "server": "223.5.5.5"
       }
     ],
     "rules": [
