@@ -37,7 +37,7 @@ if [ -n "$HY2_URI" ]; then
       sni)           echo "    sni: \"${val}\"" ;;
       insecure|allowInsecure)
         case "$val" in 1|true) echo "    skip-cert-verify: true" ;; *) echo "    skip-cert-verify: false" ;; esac ;;
-      pinSHA256)     echo "    certificate: \"${val}\"" ;;
+      pinSHA256)     ;; # mihomo hy2 does not support cert fingerprint pinning, rely on skip-cert-verify
       mport)         echo "    ports: \"${val}\"" ;;
       hop-interval)  echo "    hop-interval: ${val}" ;;
       up)            echo "    up: \"${val}\"" ;;
